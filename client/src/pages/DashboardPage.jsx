@@ -1,0 +1,13 @@
+import { useEffect, useState } from 'react';
+import { Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import api from '../api';
+import TransactionRows from '../components/transactions/TransactionRows';
+import { formatCurrency } from '../utils/formatters';
+
+export default function DashboardPage() {
+  const [summary, setSummary] = useState(null); const [recent, setRecent] = useState([]); const [error, setError] = useState('');
+  useEffect(() => { Promise.all([api.get('/transactions/summary'), api.get('/transactions?limit=5')]).then(([summaryResult, transactionsResult]) => { setSummary(summaryResult.data); setRecent(transactionsResult.data.transactions); }).catch(() => setError('Could not load your dashboard. Please refresh.')); }, []);
+  if (error) return <p className="error">{error}</p>; if (!summary) return <p className="muted">Loading dashboard…</p>;
+  const monthly = Object.values(summary.monthly.reduce((result, item) => { if (!result[item._id.month]) result[item._id.month] = { month: item._id.month, income: 0, expense: 0 }; result[item._id.month][item._id.type] = item.total; return result; }, {})); const colors = ['#4c6fff', '#e46e54', '#f3b544', '#2e9b69', '#8368d9'];
+  return <><header><p className="eyebrow">OVERVIEW</p><h1>Your money, at a glance</h1></header><div className="cards">{[['Total balance', summary.totals.balance, 'balance'], ['Total income', summary.totals.income, 'income'], ['Total expenses', summary.totals.expense, 'expense']].map(([label, value, kind]) => <article className="stat" key={label}><span>{label}</span><strong className={kind}>{formatCurrency(value)}</strong></article>)}</div><div className="grid"><section className="panel chart-panel"><h2>Monthly cash flow</h2><ResponsiveContainer width="100%" height={260}><BarChart data={monthly}><XAxis dataKey="month" /><YAxis /><Tooltip formatter={formatCurrency} /><Bar dataKey="income" fill="#2e9b69" radius={[5, 5, 0, 0]} /><Bar dataKey="expense" fill="#e46e54" radius={[5, 5, 0, 0]} /></BarChart></ResponsiveContainer></section><section className="panel chart-panel"><h2>Expense categories</h2>{summary.byCategory.length ? <ResponsiveContainer width="100%" height={260}><PieChart><Pie data={summary.byCategory} dataKey="total" nameKey="_id" outerRadius={88}>{summary.byCategory.map((item, index) => <Cell key={item._id} fill={colors[index % colors.length]} />)}</Pie><Tooltip formatter={formatCurrency} /></PieChart></ResponsiveContainer> : <p className="empty">Add an expense to view category data.</p>}</section></div><section className="panel"><h2>Recent transactions</h2><TransactionRows transactions={recent} /></section></>;
+}
