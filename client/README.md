@@ -1,16 +1,26 @@
-# React + Vite
+# Spendwise Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+The React frontend for the Spendwise personal expense tracker. It uses JavaScript and Vite.
 
-Currently, two official plugins are available:
+## Commands
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+npm install
+npm run dev
+npm run lint
+npm run build
+```
 
-## React Compiler
+The development server runs at `http://localhost:5173` by default.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Configuration
 
-## Expanding the Oxlint configuration
+Copy `.env.example` to `.env` only when the API URL differs from `http://localhost:5000/api`.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Source structure
+
+- `components/` — reusable UI pieces
+- `pages/` — route-level screens
+- `layouts/` — shared navigation
+- `constants/` and `utils/` — shared values and helpers
+- `api.js` — configured JWT-aware API client

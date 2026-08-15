@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
 const Transaction = require('../models/Transaction');
 
+// Converts optional URL query parameters into a MongoDB filter scoped to the signed-in user.
 const getFilters = (query, user) => {
   const filters = { user };
   if (query.type) filters.type = query.type;
