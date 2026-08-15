@@ -1,0 +1,11 @@
+const router = require('express').Router();
+const { body } = require('express-validator');
+const protect = require('../middleware/auth');
+const controller = require('../controllers/transactionController');
+const rules = [body('title').trim().notEmpty().withMessage('Title is required.'), body('amount').isFloat({ min: 0.01 }).withMessage('Amount must be greater than zero.'), body('type').isIn(['income', 'expense']).withMessage('Type must be income or expense.'), body('category').trim().notEmpty().withMessage('Category is required.'), body('date').isISO8601().withMessage('Enter a valid date.')];
+router.use(protect);
+router.get('/summary', controller.summary);
+router.get('/categories', controller.categories);
+router.route('/').get(controller.list).post(rules, controller.create);
+router.route('/:id').patch(rules, controller.update).delete(controller.remove);
+module.exports = router;
