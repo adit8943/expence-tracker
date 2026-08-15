@@ -94,7 +94,11 @@ function TransactionForm({ editing, categories, onSaved, onCancel }) {
   const save = async (event) => {
     event.preventDefault(); setError('');
     const payload = { ...form, amount: Number(form.amount) };
-    try { editing ? await api.patch(`/transactions/${editing._id}`, payload) : await api.post('/transactions', payload); onSaved(editing ? 'Transaction updated.' : 'Transaction added.'); }
+    try {
+      if (editing) await api.patch(`/transactions/${editing._id}`, payload);
+      else await api.post('/transactions', payload);
+      onSaved(editing ? 'Transaction updated.' : 'Transaction added.');
+    }
     catch (err) { setError(err.response?.data?.message || 'Could not save transaction.'); }
   };
   return <section className="panel form-panel"><h2>{editing ? <><Edit3 size={18} /> Edit transaction</> : <><Plus size={18} /> Add transaction</>}</h2>
